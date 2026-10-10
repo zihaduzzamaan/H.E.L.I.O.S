@@ -10,8 +10,8 @@ interface HeaderBarProps {
   orbitalPosition?: DistancePreset;
   onSelectOrbitalPosition?: (pos: DistancePreset) => void;
   speedMultiplier?: number;
-  activeView?: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY';
-  onSelectView?: (view: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY') => void;
+  activeView?: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY' | 'ALERTS' | 'SUIT_HUD';
+  onSelectView?: (view: any) => void;
   latestAlert?: AlertPayload | null;
   selectedAstronautId?: string;
   /** When true, renders ONLY the fixed bottom JARVIS bar — no top navbar */
@@ -569,6 +569,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
               {[
                 { id: 'HUD', label: 'Dashboard', tip: 'Astronaut vitals and ECG' },
                 { id: 'HEALTH_TELEMETRY', label: 'Health-Telemetry', tip: 'Detailed biomarker reports' },
+                { id: 'ALERTS', label: 'Alerts', tip: 'Active clinical and environmental protocols' },
                 { id: 'MCC', label: 'Earth MCC', tip: 'Mission control operations' },
                 { id: 'SUIT_HUD', label: 'Suit HUD', tip: 'First-person Mars EVA Helmet HUD' },
               ].map((tabItem) => {

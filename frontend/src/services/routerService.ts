@@ -10,7 +10,7 @@
  */
 
 export interface AppRouteState {
-  view: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY';
+  view: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY' | 'ALERTS';
   astronautId: string;
 }
 
@@ -132,6 +132,18 @@ export function parseCurrentRoute(): AppRouteState {
     };
   }
 
+  const alertsIdx = path.indexOf('/alerts');
+  if (alertsIdx !== -1) {
+    const sub = path.slice(alertsIdx); // e.g. "/alerts/haley" or "/alerts"
+    const segments = sub.split('/').filter(Boolean); // ['alerts', 'haley']
+    const rawParam = segments[1] || 'haley';
+    const astronautId = resolveAstronautIdFromSlug(rawParam);
+    return {
+      view: 'ALERTS',
+      astronautId,
+    };
+  }
+
   const telemetryIdx = path.indexOf('/telemetry');
 
   if (telemetryIdx !== -1) {
@@ -179,4 +191,27 @@ export function navigateTo(targetPath: string, replace = false): void {
 
   // Trigger synthetic popstate so subscribed listeners synchronize immediately
   window.dispatchEvent(new PopStateEvent('popstate'));
+}
+
+/**
+ * High-level router helper to navigate between major views and astronauts.
+ */
+export function navigateToView(
+  view: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY' | 'ALERTS',
+  astronautId?: string
+): void {
+  const slug = getSlugFromAstronautId(astronautId);
+  if (view === 'ALERTS') {
+    navigateTo(`/alerts/${slug}`);
+  } else if (view === 'HEALTH_TELEMETRY') {
+    navigateTo(`/telemetry/${slug}`);
+  } else if (view === 'MCC_TELEMETRY') {
+    navigateTo(`/mcc/telemetry/${slug}`);
+  } else if (view === 'MCC') {
+    navigateTo('/mcc');
+  } else if (view === 'SCANNER') {
+    navigateTo('/scanner');
+  } else {
+    navigateTo('/');
+  }
 }

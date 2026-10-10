@@ -1,0 +1,80 @@
+/* ============================================================
+   ASTRODOCX — 3D ANATOMY MODAL (L4)
+   Opt-in Sketchfab viewer opened from the Health Twin header.
+   Isolated: styles only for .anat3d-* elements.
+============================================================ */
+
+/* Trigger button (sits in the Health Twin subtitle row) */
+.anat3d-open {
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  padding:6px 12px;border-radius:99px;
+  border:1px solid rgba(34,211,238,.55);color:#E0FBFF;
+  background:linear-gradient(135deg,rgba(34,211,238,.18),rgba(129,140,248,.14));
+  box-shadow:0 0 0 0 var(--holo-glow);
+  transition:box-shadow .25s ease,border-color .25s ease,transform .25s ease;
+}
+.anat3d-open:hover, .anat3d-open:focus-visible { border-color:var(--holo);box-shadow:0 0 18px var(--holo-glow);transform:translateY(-1px);outline:none; }
+.anat3d-open svg { width:14px;height:14px;flex:none; }
+
+/* Modal */
+.anat3d {
+  position:fixed;inset:0;z-index:10000;
+  display:grid;place-items:center;padding:16px;
+  background:rgba(2,6,23,.82);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  opacity:0;transition:opacity .25s ease;
+}
+.anat3d[hidden] { display:none; }
+.anat3d.is-open { opacity:1; }
+
+/* The site hides the native cursor; restore it inside the modal
+   (the custom cursor cannot follow the pointer over an iframe). */
+.anat3d, .anat3d * { cursor:auto !important; }
+.anat3d button, .anat3d a { cursor:pointer !important; }
+body.anat3d-lock #cursor-dot, body.anat3d-lock #cursor-ring { opacity:0 !important; }
+body.anat3d-lock { overflow:hidden; }
+
+.anat3d__box {
+  position:relative;width:min(1100px,100%);
+  border:1px solid rgba(34,211,238,.35);border-radius:18px;
+  background:rgba(10,15,30,.9);
+  box-shadow:0 24px 80px rgba(0,0,0,.6),0 0 40px rgba(34,211,238,.12);
+  padding:14px;
+  transform:translateY(12px) scale(.98);transition:transform .3s cubic-bezier(.2,.8,.2,1);
+}
+.anat3d.is-open .anat3d__box { transform:none; }
+.anat3d__box::before { content:'';position:absolute;top:0;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,var(--holo),transparent);opacity:.8; }
+
+.anat3d__head { display:flex;align-items:center;gap:12px;margin:2px 4px 12px; }
+.anat3d__title { font-family:var(--font-mono);font-size:.78rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--holo); }
+.anat3d__hint { font-size:.8rem;color:rgba(255,255,255,.55);margin-left:auto; }
+
+.anat3d__close {
+  width:36px;height:36px;flex:none;border-radius:50%;
+  border:1px solid rgba(34,211,238,.5);background:#0b1020;color:#E6E9F5;
+  font-size:20px;line-height:1;display:grid;place-items:center;
+  transition:border-color .2s,box-shadow .2s;
+}
+.anat3d__close:hover, .anat3d__close:focus-visible { border-color:var(--holo);box-shadow:0 0 14px var(--holo-glow);outline:none; }
+
+.anat3d__frame { position:relative;aspect-ratio:16/10;max-height:calc(100vh - 170px);width:100%;border-radius:12px;overflow:hidden;background:#000; }
+.anat3d__frame iframe { position:absolute;inset:0;width:100%;height:100%;border:0; }
+.anat3d__loading { position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(165,243,252,.7); }
+
+.anat3d__foot { display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin:10px 4px 0;font-family:var(--font-mono);font-size:.7rem;color:rgba(255,255,255,.55); }
+.anat3d__foot a { color:var(--holo);text-decoration:none; }
+.anat3d__foot a:hover { text-decoration:underline; }
+.anat3d__note { margin-left:auto; }
+
+@media (max-width:680px) {
+  .anat3d { padding:8px; }
+  .anat3d__box { padding:10px;border-radius:14px; }
+  .anat3d__hint, .anat3d__note { display:none; }
+  .anat3d__close { margin-left:auto; }
+  .anat3d__frame { aspect-ratio:3/4;max-height:calc(100vh - 140px); }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .anat3d, .anat3d__box, .anat3d-open { transition:none; }
+}

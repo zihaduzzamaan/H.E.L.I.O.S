@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HELIOS × ASTRODOCX — Bio-Twin 3D Holographic Body Scanner</title>
+  <meta name="description" content="NASA Space Apps 2026 Telemetry Bio-Twin Scanner Demo: 24,000 GPU particles, traveling arterial pulses, living brainwaves, and dynamic orthogonal leader lines.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩺</text></svg>">
+</head>
+<body>
+
+  <div id="app-viewport">
+    <div class="bg-grid"></div>
+
+    <!-- ═════════════════════ TOP AEROSPACE HEADER ═════════════════════ -->
+    <header class="scanner-header">
+      <div class="header-brand">
+        <span class="brand-badge"><i></i> LIVE TELEMETRY</span>
+        <div class="header-title">
+          <h1>HELIOS BIO-TWIN SCANNER</h1>
+          <p>PILOT AST-02 &middot; NASA-STD-3001 &middot; ASTRODOCX REVERSE-ENGINEERED MODULE</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="action-pill" id="modelStatus">24K PARTICLES &middot; GPU READY</span>
+      </div>
+    </header>
+
+    <!-- ═════════════════════ THREE.JS WEBGL CANVAS ═════════════════════ -->
+    <canvas id="scannerCanvas" aria-label="3D Holographic Body Scanner Canvas"></canvas>
+
+    <!-- ═════════════════════ HUD TELEMETRY & LEADER LINES ═════════════════════ -->
+    <div id="twin-stage">
+      <!-- Dynamic Chamfered Leader Lines SVG -->
+      <svg class="tw-lines" aria-hidden="true"></svg>
+
+      <!-- 5 NASA RIDGE Hazard Telemetry Pill Cards matching reference image -->
+      <div class="tw-labels">
+        <!-- 01 · ISOLATION (Top Left -> Brain) -->
+        <article class="tw-hazard-pill" data-side="left" data-state="ok">
+          <div class="pill-text">
+            <span class="pill-name">Isolation</span>
+            <span class="pill-badge badge-ok">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="12" height="12"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              NOMINAL
+            </span>
+          </div>
+          <div class="pill-icon-wrap icon-ok">
+            <!-- Brain Icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04z"/>
+              <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04z"/>
+            </svg>
+          </div>
+        </article>
+
+        <!-- 02 · RADIATION (Middle Left -> Body/Waist) -->
+        <article class="tw-hazard-pill" data-side="left" data-state="ok">
+          <div class="pill-text">
+            <span class="pill-name">Radiation</span>
+            <span class="pill-badge badge-ok">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="12" height="12"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              NOMINAL
+            </span>
+          </div>
+          <div class="pill-icon-wrap icon-ok">
+            <!-- Radiation Icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <circle cx="12" cy="12" r="2.5"/>
+              <path d="M12 9.5V4m-2.17 11.25L6.3 17.2m9.87-1.95l3.53 1.95M7.67 9.75L4.14 7.8m12.19 1.95l3.53-1.95"/>
+            </svg>
+          </div>
+        </article>
+
+        <!-- 03 · ENVIRONMENT (Top Right -> Lungs/Air, ACT) -->
+        <article class="tw-hazard-pill" data-side="right" data-state="act">
+          <div class="pill-icon-wrap icon-act">
+            <!-- Wind/Lungs Atmosphere Icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/>
+              <path d="M9.6 4.6A2 2 0 1 1 11 8H2"/>
+              <path d="M12.6 19.4A2 2 0 1 0 14 16H2"/>
+            </svg>
+          </div>
+          <div class="pill-text">
+            <span class="pill-name">Environment</span>
+            <span class="pill-badge badge-act">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="12" height="12"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+              ACT
+            </span>
+          </div>
+        </article>
+
+        <!-- 04 · DISTANCE (Middle Right -> Left Forearm Link) -->
+        <article class="tw-hazard-pill" data-side="right" data-state="ok">
+          <div class="pill-icon-wrap icon-ok">
+            <!-- Satellite / Distance Icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <div class="pill-text">
+            <span class="pill-name">Distance</span>
+            <span class="pill-badge badge-ok">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="12" height="12"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              NOMINAL
+            </span>
+          </div>
+        </article>
+
+        <!-- 05 · GRAVITY (Bottom Right -> Knee/Musculoskeletal) -->
+        <article class="tw-hazard-pill" data-side="right" data-state="ok">
+          <div class="pill-icon-wrap icon-ok">
+            <!-- Gravity / Bone Icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <circle cx="6.5" cy="6.5" r="2.5"/>
+              <circle cx="17.5" cy="17.5" r="2.5"/>
+              <path d="M8.5 8.5l7 7"/>
+              <circle cx="17.5" cy="6.5" r="2.5"/>
+              <circle cx="6.5" cy="17.5" r="2.5"/>
+              <path d="M15.5 8.5l-7 7"/>
+            </svg>
+          </div>
+          <div class="pill-text">
+            <span class="pill-name">Gravity</span>
+            <span class="pill-badge badge-ok">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="12" height="12"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              NOMINAL
+            </span>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- ═════════════════════ INTERACTIVE PLAYBACK CONTROLS ═════════════════════ -->
+    <footer class="scanner-controls">
+      <button class="ctrl-btn" id="btnPlay" title="Play or pause auto-sweep">PAUSE</button>
+      <div class="scrub-container">
+        <label for="scanScrub">SCAN SWEEP:</label>
+        <input type="range" class="scrub-range" id="scanScrub" min="0" max="1" step="0.001" value="0">
+        <span id="scrubVal" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyan); min-width: 32px;">0%</span>
+      </div>
+      <button class="ctrl-btn" id="btnReset" title="Reset angle and progress">RESET</button>
+    </footer>
+  </div>
+
+  <!-- Three.js (r128) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Scanner Modules -->
+  <script src="scanner-engine.js"></script>
+  <script src="scanner-hud.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

@@ -159,10 +159,11 @@
   --hud-critical-subtle: rgba(250, 204, 21, 0.15);
   --hud-cyan: #38bdf8;
 
-  /* Typography: Orbitron for Brand Hero & Tomorrow for HUD metrics */
-  --hud-font-brand: 'Orbitron', 'Tomorrow', sans-serif;
-  --hud-font-sans: 'Tomorrow', sans-serif;
-  --hud-font-mono: ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  /* Typography: Space Grotesk for Display, Inter for Clean UI, JetBrains Mono for Telemetry */
+  --hud-font-brand: 'Space Grotesk', 'Tomorrow', sans-serif;
+  --hud-font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --hud-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --hud-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --hud-text-primary: #ffffff;      /* 100% Crisp White for values & headers */
   --hud-text-secondary: #e2e8f0;    /* 90% White for subheads & essential metrics */

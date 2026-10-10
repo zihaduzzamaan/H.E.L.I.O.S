@@ -34,7 +34,7 @@ interface CrewMeta {
   roleShort: string;
 }
 
-const CREW_MEMBERS: CrewMeta[] = [
+export const CREW_MEMBERS: CrewMeta[] = [
   { id: 'AST-01_COMMANDER', name: 'Cmndr Haley', role: 'Mission Commander', age: 38, callsign: 'HALEY', avatar: '/crew/haley.jpg', subjectId: 'C001', roleShort: 'CDR' },
   { id: 'AST-02_PILOT', name: 'Pilot Chris', role: 'Flight Pilot', age: 42, callsign: 'CHRIS', avatar: '/crew/chris.jpg', subjectId: 'C002', roleShort: 'PLT' },
   { id: 'AST-03_MEDICAL', name: 'Dr. Sian', role: 'Medical Specialist', age: 29, callsign: 'SIAN', avatar: '/crew/sian.jpg', subjectId: 'C003', roleShort: 'MED' },
@@ -1484,13 +1484,14 @@ export const HealthTelemetryView: React.FC<HealthTelemetryViewProps> = ({
       <div
         style={{
           width: '100%',
-          maxWidth: '1250px',
+          maxWidth: '1360px',
           display: 'flex',
           flexDirection: 'column',
           minHeight: '100%',
-          borderLeft: '1px solid #222222',
-          borderRight: '1px solid #222222',
-          backgroundColor: '#0e0e0e',
+          borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+          backgroundColor: '#070b12',
+          boxShadow: '0 0 50px rgba(0, 0, 0, 0.85)',
         }}
       >
         {/* ── UNIFIED MAIN HEADER WITH BRAND LOGO & SYSTEM CONTROLS ──────── */}
@@ -1499,9 +1500,11 @@ export const HealthTelemetryView: React.FC<HealthTelemetryViewProps> = ({
             position: 'sticky',
             top: 0,
             zIndex: 100,
-            background: '#0c0c0c',
-            borderBottom: '1px solid #222222',
-            padding: '0 24px',
+            background: 'rgba(10, 15, 26, 0.90)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            padding: '0 20px',
           }}
         >
           <HeaderBar
@@ -1925,20 +1928,29 @@ export const HealthTelemetryView: React.FC<HealthTelemetryViewProps> = ({
             </div>
           </div>
 
-          {/* ── CREW SELECTOR TABS ── */}
+          {/* ── SLEEK CREW SELECTOR CAPSULE ── */}
           <div
             style={{
               width: '100%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginTop: '6px',
+              margin: '8px 0 2px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '6px' }}>
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                background: 'rgba(255, 255, 255, 0.04)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '999px',
+                padding: '4px',
+                gap: '6px',
+              }}
+            >
               {CREW_MEMBERS.map((crew) => {
                 const isSelected = crew.id === selectedId;
-                const isHovered = crew.id === hoveredCrewId && !isSelected;
                 const crewPacket =
                   telemetryMap[crew.id] ||
                   (crew.id === 'AST-03_MEDICAL' ? telemetryMap['AST-03_MEDICAL_SPECIALIST'] : undefined) ||
@@ -1946,7 +1958,8 @@ export const HealthTelemetryView: React.FC<HealthTelemetryViewProps> = ({
                 const crewSev = crewPacket?.evaluated_severity || 'NOMINAL';
                 const dotColor =
                   crewSev === 'CRITICAL' ? '#ef4444' : crewSev === 'WARNING' ? '#f59e0b' : '#22c55e';
-                const shortName = crew.name.replace('Cmndr ', '').replace('Pilot ', '').replace('Dr. ', '').replace('Specialist ', '');
+                const shortRole = crew.id.includes('COMMANDER') ? 'CO' : crew.id.includes('PILOT') ? 'FE' : crew.id.includes('MEDICAL') ? 'MO' : 'PI';
+                const lastName = crew.name.split(' ')[1] || crew.name;
 
                 return (
                   <button
@@ -1955,117 +1968,54 @@ export const HealthTelemetryView: React.FC<HealthTelemetryViewProps> = ({
                       setSelectedId(crew.id);
                       onAstronautChange?.(crew.id);
                     }}
-                    onMouseEnter={() => setHoveredCrewId(crew.id)}
-                    onMouseLeave={() => setHoveredCrewId(null)}
                     title={`${crew.name} - ${crew.role} (${crew.subjectId})`}
                     style={{
-                      display: 'flex',
+                      display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '7px',
-                      padding: '6px 11px 6px 7px',
-                      height: '38px',
-                      boxSizing: 'border-box',
-                      borderRadius: '8px 8px 0 0',
-                      outline: 'none',
-                      borderTop: isSelected
-                        ? '2px solid #ffffff'
-                        : isHovered
-                        ? '2px solid rgba(255, 255, 255, 0.35)'
-                        : '2px solid #2a2a2a',
-                      borderLeft: isSelected
-                        ? '1px solid #444444'
-                        : isHovered
-                        ? '1px solid #333333'
-                        : '1px solid #252525',
-                      borderRight: isSelected
-                        ? '1px solid #444444'
-                        : isHovered
-                        ? '1px solid #333333'
-                        : '1px solid #252525',
-                      borderBottom: 'none',
-                      marginBottom: '-1px',
-                      background: isSelected
-                        ? 'linear-gradient(180deg, #2c2c2c 0%, #181818 100%)'
-                        : isHovered
-                        ? '#222222'
-                        : '#141414',
+                      gap: '8px',
+                      padding: isSelected ? '5px 14px 5px 6px' : '5px 10px',
+                      borderRadius: '999px',
+                      border: 'none',
+                      background: isSelected ? 'rgba(56, 189, 248, 0.18)' : 'transparent',
+                      color: isSelected ? '#ffffff' : '#94a3b8',
                       boxShadow: isSelected
-                        ? '0 -2px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.20)'
+                        ? 'inset 0 0 0 1px rgba(56, 189, 248, 0.45), 0 0 12px rgba(56, 189, 248, 0.22)'
                         : 'none',
-                      color: isSelected ? '#ffffff' : isHovered ? '#ffffff' : '#94a3b8',
                       cursor: 'pointer',
-                      transition: 'background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease',
-                      position: 'relative',
-                      zIndex: isSelected ? 3 : 1,
+                      fontFamily: "'Tomorrow', sans-serif",
+                      fontSize: '12px',
+                      fontWeight: isSelected ? 700 : 500,
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    {/* Astronaut Photo Thumbnail with live health status ring */}
                     <div
                       style={{
                         position: 'relative',
-                        width: '26px',
-                        height: '26px',
-                        borderRadius: '6px',
+                        width: '22px',
+                        height: '22px',
+                        borderRadius: '50%',
                         overflow: 'hidden',
                         flexShrink: 0,
                         border: `1.5px solid ${dotColor}`,
-                        boxShadow: isSelected ? `0 0 6px ${dotColor}` : 'none',
-                        backgroundColor: '#0f172a',
                       }}
                     >
                       <img
                         src={crew.avatar}
                         alt={crew.name}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          display: 'block',
-                        }}
-                      />
-                      <span
-                        style={{
-                          position: 'absolute',
-                          bottom: '-1px',
-                          right: '-1px',
-                          width: '6px',
-                          height: '6px',
-                          borderRadius: '50%',
-                          backgroundColor: dotColor,
-                          border: '1px solid #000000',
-                          boxShadow: `0 0 3px ${dotColor}`,
-                        }}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                     </div>
-
-                    {/* Short Name */}
+                    <span>{shortRole}</span>
+                    {isSelected && <span style={{ color: '#38bdf8' }}>{lastName}</span>}
                     <span
                       style={{
-                        fontSize: '12px',
-                        fontWeight: isSelected ? 700 : 600,
-                        fontFamily: "'Tomorrow', sans-serif",
-                        letterSpacing: '-0.01em',
-                        lineHeight: 1,
-                        whiteSpace: 'nowrap',
+                        width: '6px',
+                        height: '6px',
+                        borderRadius: '50%',
+                        backgroundColor: dotColor,
+                        boxShadow: `0 0 6px ${dotColor}`,
                       }}
-                    >
-                      {shortName}
-                    </span>
-
-                    {/* Subtle Designation Text */}
-                    <span
-                      style={{
-                        fontSize: '9.5px',
-                        fontWeight: 500,
-                        color: isSelected ? 'rgba(255, 255, 255, 0.65)' : '#71717a',
-                        fontFamily: "'Tomorrow', sans-serif",
-                        letterSpacing: '0.02em',
-                        lineHeight: 1,
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {crew.role}
-                    </span>
+                    />
                   </button>
                 );
               })}

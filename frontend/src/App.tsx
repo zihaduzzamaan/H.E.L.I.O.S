@@ -6,6 +6,8 @@ import { ScenarioController } from './components/ScenarioController';
 import { HealthTelemetryView } from './components/HealthTelemetryView';
 import { MissionControlView } from './components/MissionControlView';
 import { HolographicBodyScanner } from './components/HolographicBodyScanner';
+import { BioTwinCommandDeck } from './components/BioTwinCommandDeck';
+import { AlertsPageView } from './views/AlertsPageView';
 import { SpaceBackground } from './components/SpaceBackground';
 import { wsService } from './services/websocketService';
 import {
@@ -23,9 +25,9 @@ const DEFAULT_NOMINAL_TELEMETRY: Record<string, TelemetryPacket> = {
     astronaut_id: 'AST-01_COMMANDER',
     astronaut_name: 'Haley',
     mission_state: 'REST',
-    heart_rate: 62.0,
+    heart_rate: 60.0,
     hrv_rmssd: 68.0,
-    spo2: 98.4,
+    spo2: 99.3,
     core_temp: 36.6,
     sleep_score: 92,
     cabin_co2: 1.82,
@@ -114,14 +116,19 @@ const DEFAULT_NOMINAL_TELEMETRY: Record<string, TelemetryPacket> = {
 export function App() {
   // Parse initial route: '/' -> HUD; '/telemetry/:name' -> Health Telemetry; '/mcc' -> Earth MCC; '/mcc/telemetry/:name' -> Earth MCC Telemetry; '/scanner' -> 3D Hologram
   const initialRoute = parseCurrentRoute();
-  const [activeView, setActiveView] = useState<'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY'>(initialRoute.view);
+  const [activeView, setActiveView] = useState<'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY' | 'ALERTS'>(initialRoute.view);
   const [activeTriageAstronautId, setActiveTriageAstronautId] = useState<string | null>(
     initialRoute.view === 'HEALTH_TELEMETRY' ? initialRoute.astronautId : null
+  );
+  const [activeAlertsAstronautId, setActiveAlertsAstronautId] = useState<string | null>(
+    initialRoute.view === 'ALERTS' ? initialRoute.astronautId : null
   );
   const [activeMccAstronautId, setActiveMccAstronautId] = useState<string | null>(
     initialRoute.view === 'MCC_TELEMETRY' ? initialRoute.astronautId : null
   );
   const [scannerAstronautId, setScannerAstronautId] = useState<string>('AST-02_PILOT');
+  const [dashboardMode, setDashboardMode] = useState<'3D_DECK' | 'CREW_GRID'>('3D_DECK');
+  const [commandDeckAstronautId, setCommandDeckAstronautId] = useState<string>('AST-01_COMMANDER');
 
   const [connected, setConnected] = useState<boolean>(false);
   const [marsDelay, setMarsDelay] = useState<boolean>(false);
@@ -189,19 +196,27 @@ export function App() {
     const handlePopState = () => {
       const route = parseCurrentRoute();
       setActiveView(route.view);
-      if (route.view === 'HEALTH_TELEMETRY') {
+      if (route.view === 'ALERTS') {
+        setActiveAlertsAstronautId(route.astronautId);
+        setActiveTriageAstronautId(null);
+        setActiveMccAstronautId(null);
+      } else if (route.view === 'HEALTH_TELEMETRY') {
         setActiveTriageAstronautId(route.astronautId);
         setActiveMccAstronautId(null);
+        setActiveAlertsAstronautId(null);
       } else if (route.view === 'MCC_TELEMETRY') {
         setActiveMccAstronautId(route.astronautId);
         setActiveTriageAstronautId(null);
+        setActiveAlertsAstronautId(null);
       } else if (route.view === 'SCANNER') {
         setScannerAstronautId(route.astronautId || 'AST-02_PILOT');
         setActiveTriageAstronautId(null);
         setActiveMccAstronautId(null);
+        setActiveAlertsAstronautId(null);
       } else {
         setActiveTriageAstronautId(null);
         setActiveMccAstronautId(null);
+        setActiveAlertsAstronautId(null);
       }
     };
 
@@ -490,17 +505,33 @@ export function App() {
     navigateTo(`/mcc/telemetry/${slug}`);
   }, []);
 
+  const handleOpenAlerts = useCallback((astId?: string) => {
+    const targetId = astId || activeAlertsAstronautId || commandDeckAstronautId || 'AST-01_COMMANDER';
+    const slug = getSlugFromAstronautId(targetId);
+    setActiveAlertsAstronautId(targetId);
+    setActiveView('ALERTS');
+    navigateTo(`/alerts/${slug}`);
+  }, [activeAlertsAstronautId, commandDeckAstronautId]);
+
   const handleSelectView = useCallback(
-    (view: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY') => {
+    (view: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY' | 'ALERTS' | 'SUIT_HUD') => {
       if (view === 'HUD') {
         setActiveView('HUD');
         setActiveTriageAstronautId(null);
         setActiveMccAstronautId(null);
+        setActiveAlertsAstronautId(null);
         navigateTo('/');
+      } else if (view === 'ALERTS') {
+        const targetId = activeAlertsAstronautId || commandDeckAstronautId || 'AST-01_COMMANDER';
+        const slug = getSlugFromAstronautId(targetId);
+        setActiveView('ALERTS');
+        setActiveAlertsAstronautId(targetId);
+        navigateTo(`/alerts/${slug}`);
       } else if (view === 'MCC') {
         setActiveView('MCC');
         setActiveTriageAstronautId(null);
         setActiveMccAstronautId(null);
+        setActiveAlertsAstronautId(null);
         navigateTo('/mcc');
       } else if (view === 'MCC_TELEMETRY') {
         const targetId = activeMccAstronautId || 'AST-01_COMMANDER';
@@ -512,6 +543,7 @@ export function App() {
         setActiveView('SCANNER');
         setActiveTriageAstronautId(null);
         setActiveMccAstronautId(null);
+        setActiveAlertsAstronautId(null);
         navigateTo('/scanner');
       } else if ((view as string) === 'SUIT_HUD') {
         window.location.assign('/suit-hud');
@@ -523,7 +555,7 @@ export function App() {
         navigateTo(`/telemetry/${slug}`);
       }
     },
-    [activeTriageAstronautId, activeMccAstronautId]
+    [activeTriageAstronautId, activeMccAstronautId, activeAlertsAstronautId, commandDeckAstronautId]
   );
 
   // Deep-Space Telemetry Downlink In-Transit Status Ribbon (Strictly rendered within Earth MCC domain)
@@ -629,18 +661,20 @@ export function App() {
       {/* ─── 1. FLIGHT HUD VIEW (DEFAULT HOME PAGE — 100% INSTANT SPACECRAFT DATA) ─── */}
       {activeView === 'HUD' && (
         <>
-          {/* Top Sticky Navbar & Full-Width ECLSS Cabin Environmental Ribbon */}
+          {/* Top Sticky Main Navigation HeaderBar */}
           <div
             style={{
               position: 'sticky',
               top: 0,
               zIndex: 200,
               overflow: 'visible',
-              background: '#0c0c0c',
+              background: '#04080e',
+              borderBottom: '1px solid rgba(0, 229, 255, 0.15)',
               width: '100%',
+              backdropFilter: 'blur(16px)',
             }}
           >
-            <div style={{ maxWidth: '1250px', margin: '0 auto', padding: '0 20px' }}>
+            <div style={{ width: '100%', maxWidth: '1360px', margin: '0 auto', padding: '0 20px', boxSizing: 'border-box' }}>
               <HeaderBar
                 connected={connected}
                 marsDelay={false}
@@ -649,22 +683,81 @@ export function App() {
                 activeView={activeView}
                 onSelectView={handleSelectView}
                 latestAlert={latestAlert}
-                selectedAstronautId={activeTriageAstronautId || 'AST-01_COMMANDER'}
+                selectedAstronautId={commandDeckAstronautId}
               />
             </div>
-            {/* Full-Viewport Width Sticky ECLSS Environmental Ribbon directly beneath navbar */}
-            <CabinEnvironmentalBar
-              telemetryMap={telemetryMap}
-              currentScenario={currentScenario}
-            />
+            {dashboardMode === 'CREW_GRID' && (
+              <CabinEnvironmentalBar
+                telemetryMap={telemetryMap}
+                currentScenario={currentScenario}
+              />
+            )}
           </div>
 
-          <div style={{ maxWidth: '1250px', margin: '0 auto', padding: '16px 20px 72px', position: 'relative', zIndex: 1 }}>
-            {/* Primary Flight HUD: 4-Row Crew Biometric Telemetry Grid with Inline ECG */}
-            <CrewGrid
-              telemetryMap={telemetryMap}
-              onOpenTriage={handleOpenTriage}
-            />
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '1360px',
+              margin: '0 auto',
+              padding: dashboardMode === '3D_DECK' ? '0' : '16px 20px 72px',
+              boxSizing: 'border-box',
+              position: 'relative',
+              zIndex: 1,
+            }}
+          >
+            {dashboardMode === '3D_DECK' ? (
+              <BioTwinCommandDeck
+                telemetryMap={telemetryMap}
+                latestAlert={latestAlert}
+                activeAstronautId={commandDeckAstronautId}
+                onSelectAstronaut={setCommandDeckAstronautId}
+                onOpenTriage={handleOpenTriage}
+                onOpenAlerts={handleOpenAlerts}
+                onToggleViewMode={() => setDashboardMode('CREW_GRID')}
+                currentScenario={currentScenario}
+                orbitalPosition={orbitalPosition}
+                connected={connected}
+                activeView={activeView}
+                onSelectView={handleSelectView}
+              />
+            ) : (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setDashboardMode('3D_DECK')}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '7px 14px',
+                      borderRadius: '6px',
+                      background: 'rgba(56, 189, 248, 0.16)',
+                      border: '1px solid #38bdf8',
+                      color: '#ffffff',
+                      fontSize: '11px',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      letterSpacing: '0.04em',
+                      transition: 'all 0.15s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(56, 189, 248, 0.28)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(56, 189, 248, 0.16)';
+                    }}
+                  >
+                    <span>✦ RETURN TO 3D BIO-TWIN COMMAND DECK</span>
+                  </button>
+                </div>
+                {/* Primary Flight HUD: 4-Row Crew Biometric Telemetry Grid with Inline ECG */}
+                <CrewGrid
+                  telemetryMap={telemetryMap}
+                  onOpenTriage={handleOpenTriage}
+                />
+              </div>
+            )}
           </div>
         </>
       )}
@@ -995,13 +1088,55 @@ export function App() {
         </div>
       )}
 
+      {/* ─── 6. DEDICATED ASTRODOCX NASA PROTOCOL ALERTS PAGE VIEW ─── */}
+      {activeView === 'ALERTS' && (
+        <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', backgroundColor: '#070b12' }}>
+          <div
+            style={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 200,
+              background: '#04080e',
+              borderBottom: '1px solid rgba(0, 229, 255, 0.15)',
+              width: '100%',
+              backdropFilter: 'blur(16px)',
+            }}
+          >
+            <div style={{ width: '100%', maxWidth: '1360px', margin: '0 auto', padding: '0 20px', boxSizing: 'border-box' }}>
+              <HeaderBar
+                connected={connected}
+                marsDelay={false}
+                orbitalPosition={orbitalPosition}
+                speedMultiplier={speedMultiplier}
+                activeView={activeView}
+                onSelectView={handleSelectView}
+                latestAlert={latestAlert}
+                selectedAstronautId={activeAlertsAstronautId || 'AST-01_COMMANDER'}
+              />
+            </div>
+          </div>
+
+          <AlertsPageView
+            initialAstronautId={activeAlertsAstronautId || commandDeckAstronautId || 'AST-01_COMMANDER'}
+            onAstronautChange={(id) => {
+              setActiveAlertsAstronautId(id);
+              const slug = getSlugFromAstronautId(id);
+              navigateTo(`/alerts/${slug}`, true);
+            }}
+            onBackToDashboard={() => handleSelectView('HUD')}
+          />
+        </div>
+      )}
+
       {/* Global Scenario Controller (Floating Action Pill + Aerospace Modal) */}
-      <ScenarioController
-        currentScenario={currentScenario}
-        marsDelay={marsDelay}
-        onToggleMarsDelay={handleToggleMarsDelay}
-        onScenarioTriggered={handleScenarioTriggered}
-      />
+      {activeView !== 'HUD' && (
+        <ScenarioController
+          currentScenario={currentScenario}
+          marsDelay={marsDelay}
+          onToggleMarsDelay={handleToggleMarsDelay}
+          onScenarioTriggered={handleScenarioTriggered}
+        />
+      )}
     </>
   );
 }
