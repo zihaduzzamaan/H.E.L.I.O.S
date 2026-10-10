@@ -851,7 +851,6 @@ export const HealthTelemetryView: React.FC<HealthTelemetryViewProps> = ({
   const [expandedDeviceId, setExpandedDeviceId] = useState<number | null>(null);
   const [isAnalysisDrawerOpen, setIsAnalysisDrawerOpen] = useState<boolean>(false);
   const [labProfile, setLabProfile] = useState<CrewFullLabProfile | null>(null);
-  const [hoveredCrewId, setHoveredCrewId] = useState<string | null>(null);
 
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   const [expandedBiomarkerKey, setExpandedBiomarkerKey] = useState<string | null>(null);

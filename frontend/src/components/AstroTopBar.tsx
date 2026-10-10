@@ -9,8 +9,8 @@ export interface AstroTopBarProps {
   currentScenario?: string;
   orbitalPosition?: DistancePreset;
   connected?: boolean;
-  activeView?: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY';
-  onSelectView?: (view: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY') => void;
+  activeView?: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY' | 'ALERTS' | 'SUIT_HUD';
+  onSelectView?: (view: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY' | 'ALERTS' | 'SUIT_HUD') => void;
   onToggleView?: () => void;
   onOpenAlerts?: () => void;
   onRunDemo?: () => void;

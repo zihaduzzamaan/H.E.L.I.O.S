@@ -1,7 +1,7 @@
 import React, { memo, useRef, useEffect } from 'react';
 
 export interface SpaceBackgroundProps {
-  activeView?: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY';
+  activeView?: 'HUD' | 'HEALTH_TELEMETRY' | 'MCC' | 'SCANNER' | 'MCC_TELEMETRY' | 'ALERTS' | 'SUIT_HUD';
 }
 
 /**

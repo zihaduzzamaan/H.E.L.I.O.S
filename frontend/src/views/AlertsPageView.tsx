@@ -760,7 +760,6 @@ export const AlertsPageView: React.FC<AlertsPageViewProps> = ({
                 const doneCount = currentAlert.steps.filter((s) => s.done).length;
                 const totalCount = currentAlert.steps.length;
                 const percent = totalCount > 0 ? (doneCount / totalCount) * 100 : 0;
-                const isFullyDone = doneCount === totalCount && totalCount > 0;
                 const isResolved = currentAlert.status === 'resolved';
 
                 return (
